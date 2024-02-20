@@ -1,10 +1,13 @@
 const express = require("express");
+var cors = require("cors");
+
 const fs = require("fs");
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 // Create
 app.post("/articles/create", (req, res) => {
