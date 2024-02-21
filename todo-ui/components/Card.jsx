@@ -1,34 +1,76 @@
-import { data } from "autoprefixer";
+import axios from "axios";
 import { useEffect, useState } from "react";
-import { AddTask } from "./AddTask";
 
 export function Card() {
-  const [articles, setArticles] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
+  function loadTasks() {
+    axios.get("http://localhost:3000/tasks").then((response) => {
+      setTasks(response.data);
+    });
+  }
 
   useEffect(() => {
-    fetch("http://localhost:3000/articles")
-      .then((res) => res.json())
-      .then((data) => setArticles(data));
+    loadTasks();
   }, []);
+
+  function createNewTask() {
+    const title = prompt("task name?");
+
+    if (!title) {
+      alert("fill title!");
+      return;
+    }
+
+    axios
+      .post("http://localhost:3000/tasks/create", {
+        title,
+      })
+      .then(() => {
+        loadTasks();
+      });
+  }
+
+  function editTask() {
+    const name = prompt("Task name?");
+    console.log(name);
+  }
+
+  function deleteTask(id) {
+    if (confirm("Delete?")) {
+      axios.delete(`http://localhost:3000/tasks/delete/${id}`).then(() => {
+        loadTasks();
+      });
+    }
+  }
 
   return (
     <div className="container mx-auto my-4 flex justify-center">
       <div className="flex flex-col gap-4">
-        <AddTask />
-        {articles.map((article) => (
-          <div
-            key={article.id}
-            className="item-center card flex h-[70px] w-[600px] justify-center border border-slate-700 shadow"
+        <div>
+          <button
+            className="btn btn-primary mb-2 text-lg"
+            onClick={createNewTask}
           >
-            <div className="mx-8 flex gap-2">
-              <div className="flex flex-1 items-center text-xl text-white">
-                {article.title}
-              </div>
-              <div className="flex flex-1 items-center text-xl text-white">
-                {article.desc}
-              </div>
-              <button className="btn btn-sm">edit</button>
-              <button className="btn btn-sm">delete</button>
+            New task
+          </button>
+        </div>
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            className="item-center card flex h-[70px] w-[600px] justify-center rounded-md border border-slate-700 shadow"
+          >
+            <div className="mx-8 flex items-center gap-2 text-xl">
+              <div className="flex-1 text-white">{task.title}</div>
+              <button className="btn btn-sm" onClick={() => editTask(task.id)}>
+                edit
+              </button>
+              <button
+                className="btn btn-sm"
+                onClick={() => deleteTask(task.id)}
+              >
+                delete
+              </button>
             </div>
           </div>
         ))}
