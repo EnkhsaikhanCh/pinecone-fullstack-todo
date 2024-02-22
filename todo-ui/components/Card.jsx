@@ -1,18 +1,27 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+const API_BASE_URL = `http://localhost:3000/tasks`;
+const CREATE_ENDPOINT = `create`;
+const UPDATE_ENDPOINT = `update`;
+const DELETE_ENDPOINT = `delete`;
+
 export function Card() {
   const [tasks, setTasks] = useState([]);
 
-  const api = `http://localhost:3000/tasks`;
-  const create = `create`;
-  const uptade = `update`;
-  const deleteParams = `delete`;
-
   function loadTasks() {
-    axios.get(`${api}`).then((response) => {
-      setTasks(response.data);
-    });
+    axios.get(`${API_BASE_URL}`).then(
+      (response) => {
+        setTasks(response.data);
+      },
+      (error) => {
+        console.error("Error loading task:", error.message);
+      },
+    );
+  }
+
+  function handleApiError(error) {
+    console.error("API request error: ", error.message);
   }
 
   // Create ---------------------------------------------
@@ -21,12 +30,13 @@ export function Card() {
 
     if (title) {
       axios
-        .post(`${api}/${create}`, {
+        .post(`${API_BASE_URL}/${CREATE_ENDPOINT}`, {
           title,
         })
         .then(() => {
           loadTasks();
-        });
+        })
+        .catch(handleApiError);
     }
   }
 
@@ -41,21 +51,25 @@ export function Card() {
 
     if (editedTask) {
       axios
-        .put(`${api}/${uptade}/${task.id}`, {
+        .put(`${API_BASE_URL}/${UPDATE_ENDPOINT}/${task.id}`, {
           title: editedTask,
         })
         .then(() => {
           loadTasks();
-        });
+        })
+        .catch(handleApiError);
     }
   }
 
   // Delete ---------------------------------------------
   function deleteTask(id) {
-    if (confirm("Delete?")) {
-      axios.delete(`${api}/${deleteParams}/${id}`).then(() => {
-        loadTasks();
-      });
+    if (window.confirm("Delete?")) {
+      axios
+        .delete(`${API_BASE_URL}/${DELETE_ENDPOINT}/${id}`)
+        .then(() => {
+          loadTasks();
+        })
+        .catch(handleApiError);
     }
   }
 

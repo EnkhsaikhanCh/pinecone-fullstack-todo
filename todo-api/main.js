@@ -5,12 +5,13 @@ const fs = require("fs");
 
 const app = express();
 const port = 3000;
+const filePath = "tasks.json";
 
 app.use(express.json());
 app.use(cors());
 
 function readTasks() {
-  const data = fs.readFileSync("tasks.json", "utf8");
+  const data = fs.readFileSync(filePath, "utf8");
   const list = JSON.parse(data);
   return list;
 }
@@ -28,13 +29,13 @@ app.post("/tasks/create", (req, res) => {
     title: title,
   });
 
-  fs.writeFileSync("tasks.json", JSON.stringify(list));
+  fs.writeFileSync(filePath, JSON.stringify(list));
   res.json([{ status: "Created" }]);
 });
 
 // Read ---------------------------------------------
 app.get("/tasks", (req, res) => {
-  const data = fs.readFileSync("tasks.json", "utf8");
+  const data = fs.readFileSync(filePath, "utf8");
   res.json(JSON.parse(data));
 });
 
@@ -49,7 +50,7 @@ app.put("/tasks/update/:id", (req, res) => {
 
   list[index].title = title;
 
-  fs.writeFileSync("tasks.json", JSON.stringify(list));
+  fs.writeFileSync(filePath, JSON.stringify(list));
   res.json([{ status: "Updated" }]);
 });
 
@@ -61,7 +62,7 @@ app.delete("/tasks/delete/:id", (req, res) => {
 
   const newList = list.filter((item) => item.id !== Number(id));
 
-  fs.writeFileSync("tasks.json", JSON.stringify(newList));
+  fs.writeFileSync(filePath, JSON.stringify(newList));
   res.json([{ status: "Deleted" }]);
 });
 
