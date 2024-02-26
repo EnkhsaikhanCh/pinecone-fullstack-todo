@@ -1,10 +1,27 @@
 const fs = require("fs");
+const postgres = require("postgres");
+require("dotenv").config();
+
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+
+const sql = postgres({
+  host: PGHOST,
+  database: PGDATABASE,
+  username: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  ssl: "require",
+  connection: {
+    options: `project=${ENDPOINT_ID}`,
+  },
+});
 
 const filePath = "tasks.json";
 
 function readTasks() {
-  const data = fs.readFileSync(filePath, "utf8");
-  const list = JSON.parse(data);
+  // const data = fs.readFileSync(filePath, "utf8");
+  const result = sql`select * from tasks`;
+  const list = JSON.parse(result);
   return list;
 }
 
@@ -26,9 +43,9 @@ const createTask = (req, res) => {
 };
 
 // Read ---------------------------------------------
-const getTask = (req, res) => {
-  const data = fs.readFileSync(filePath, "utf8");
-  res.json(JSON.parse(data));
+const getTask = async (req, res) => {
+  const result = await sql`select * from tasks`;
+  res.json(result);
 };
 
 // Update ---------------------------------------------
