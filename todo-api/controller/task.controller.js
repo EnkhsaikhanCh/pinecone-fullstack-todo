@@ -16,29 +16,10 @@ const sql = postgres({
   },
 });
 
-const filePath = "tasks.json";
-
-function readTasks() {
-  // const data = fs.readFileSync(filePath, "utf8");
-  const result = sql`select * from tasks`;
-  const list = JSON.parse(result);
-  return list;
-}
-
 // Create ---------------------------------------------
-const createTask = (req, res) => {
+const createTask = async (req, res) => {
   const { title } = req.body;
-
-  const list = readTasks();
-
-  const taskID = Date.now();
-
-  list.push({
-    id: taskID,
-    title: title,
-  });
-
-  fs.writeFileSync(filePath, JSON.stringify(list));
+  await sql`insert into tasks(id, title) values(${Date.now()}, ${title})`;
   res.json([{ status: "Created" }]);
 };
 
@@ -49,35 +30,24 @@ const getTask = async (req, res) => {
 };
 
 // Update ---------------------------------------------
-const updateTask = (req, res) => {
+const updateTask = async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
 
-  const list = readTasks();
-
-  const index = list.findIndex((item) => item.id === Number(id));
-
-  list[index].title = title;
-
-  fs.writeFileSync(filePath, JSON.stringify(list));
+  await sql`update tasks set title = ${title} where id = ${id}`;
   res.json([{ status: "Updated" }]);
 };
 
 // Delete ---------------------------------------------
-const deleteTask = (req, res) => {
+const deleteTask = async (req, res) => {
   const { id } = req.params;
-
-  const list = readTasks();
-
-  const newList = list.filter((item) => item.id !== Number(id));
-
-  fs.writeFileSync(filePath, JSON.stringify(newList));
+  await sql`delete from tasks where id = ${id}`;
   res.json([{ status: "Deleted" }]);
 };
 
 module.exports = {
-  getTask,
   createTask,
+  getTask,
   updateTask,
   deleteTask,
 };
