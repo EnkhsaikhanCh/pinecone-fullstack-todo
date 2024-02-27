@@ -1,4 +1,3 @@
-const fs = require("fs");
 const postgres = require("postgres");
 require("dotenv").config();
 
