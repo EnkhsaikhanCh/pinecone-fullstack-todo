@@ -86,7 +86,7 @@ export function Card() {
               className="item-center card flex h-[70px] w-[600px] justify-center rounded-md bg-base-200 shadow-sm"
             >
               <div className="mx-8 flex items-center gap-2 text-xl">
-                <div className="flex-1 text-white">{task.title}</div>
+                <TaskTitle task={task} />
                 <EditButton editTask={editTask} task={task} />
                 <DeleteButton deleteTask={deleteTask} task={task} />
               </div>
@@ -104,6 +104,10 @@ function AddTaskButton({ createNewTask }) {
       New task
     </button>
   );
+}
+
+function TaskTitle({ task }) {
+  return <div className="flex-1 text-white">{task.title}</div>;
 }
 
 function EditButton({ editTask, task }) {
