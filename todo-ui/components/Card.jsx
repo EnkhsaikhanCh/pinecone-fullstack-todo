@@ -77,12 +77,7 @@ export function Card() {
     <div className="container mx-auto my-4 flex justify-center">
       <div className="flex flex-col">
         <div>
-          <button
-            className="btn btn-primary mb-4 text-lg"
-            onClick={createNewTask}
-          >
-            New task
-          </button>
+          <AddTaskButton createNewTask={createNewTask} />
         </div>
         <div className="flex flex-col gap-1">
           {tasks.map((task) => (
@@ -92,23 +87,40 @@ export function Card() {
             >
               <div className="mx-8 flex items-center gap-2 text-xl">
                 <div className="flex-1 text-white">{task.title}</div>
-                <button
-                  className="btn btn-neutral btn-sm"
-                  onClick={() => editTask(task)}
-                >
-                  edit
-                </button>
-                <button
-                  className="btn btn-neutral btn-sm"
-                  onClick={() => deleteTask(task.id)}
-                >
-                  delete
-                </button>
+                <EditButton editTask={editTask} task={task} />
+                <DeleteButton deleteTask={deleteTask} task={task} />
               </div>
             </div>
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+function AddTaskButton({ createNewTask }) {
+  return (
+    <button className="btn btn-primary mb-4 text-lg" onClick={createNewTask}>
+      New task
+    </button>
+  );
+}
+
+function EditButton({ editTask, task }) {
+  return (
+    <button className="btn btn-neutral btn-sm" onClick={() => editTask(task)}>
+      edit
+    </button>
+  );
+}
+
+function DeleteButton({ deleteTask, task }) {
+  return (
+    <button
+      className="btn btn-neutral btn-sm"
+      onClick={() => deleteTask(task.id)}
+    >
+      delete
+    </button>
   );
 }
